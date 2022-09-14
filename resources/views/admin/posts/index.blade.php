@@ -37,9 +37,13 @@
                                 </td>
                                 <td>{{$post->user_name}}</td>
                                 <td>{{optional($post->categories)->name}}</td>
+                                <td>{{$post->user_name}}</td>
+                                @can('edit_post')
                                 <td>
                                     <a href="/admin/posts/edit/{{$post->id}}" class="btn btn-warning">Edit</a>
                                 </td>
+                                @endcan
+                                @can('delete_post')
                                 <td>
                                     <form action="/admin/posts/delete/{{$post->id}}" method="POST">
                                     @csrf
@@ -47,6 +51,7 @@
                                     <input type="submit" value="Xóa" class="btn btn-danger">
                                     </form>
                                 </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>

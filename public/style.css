@@ -497,7 +497,8 @@ img {
     position: relative;
     z-index: 1; }
     .single-blog-post .post-thumbnail img {
-      width: 100%; }
+      width: 265px;
+     }
     .single-blog-post .post-thumbnail .post-cta {
       position: absolute;
       top: 15px;

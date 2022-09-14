@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\Posts\PostServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,9 +18,15 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $postService;
+    public function __construct(PostServiceInterface $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index()
     {
-        $posts = Post::orderBy('id','desc')->get();
+        $posts = $this->postService->index();
         return view('admin.posts.index',compact('posts'));
     }
 

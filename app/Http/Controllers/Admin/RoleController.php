@@ -65,12 +65,11 @@ class RoleController extends Controller
     {
         try{
             DB::beginTransaction();
-            $role = $this->role->find($id);
-            $role->delete($id);
-            $role->roles()->detach();
+            $role = Role::find($id);
+            $role->delete();
+            $role->permissions()->detach();
             DB::commit();
             return redirect('/admin/roles');
-
         }catch(Exception $exception){
             DB::rollBack();
         }

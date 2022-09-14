@@ -20,12 +20,14 @@ class FrontCommentController extends Controller
         $data = [
             'user_id' => $users->id,
             'user_name' => $users->name,
+            'post_id'=>$post_id,
             'content' => $request->content,
-            'post_id' => $post_id,
+            'parent_id' =>$request->parent_id ? $request->parent_id : 0,
         ];
         if($comment = Comment::create($data)){
-            $comments = Comment::where(['post_id',$post_id,'parent_id'=>0])->orderBy('id','DESC')->get();
-            return view('front.component.comment',compact('comments'));
+            $comments = Comment::where(['post_id',$post_id,'parent_id' => 0])->orderBy('id','DESC')->get();
+            return view('front.detail',compact('comments'));
         }
+        echo 'Không thể bình luận';
     }
 }

@@ -22,4 +22,9 @@ class Comment extends Model
     {
         return $this->hasOne(Post::class,'id','user_id');
     }
+
+    public function comment_child()
+    {
+        return $this->hasMany(Comment::class,'parent_id','id');
+    }
 }

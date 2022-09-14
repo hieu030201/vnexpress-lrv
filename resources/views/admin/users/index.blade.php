@@ -34,10 +34,12 @@
                                 </td>
                                 <td>{{$user->name}}</td>
                                 <td>{{$user->email}}</td>
-
+                                @can('edit_user')
                                 <td>
                                     <a href="/admin/users/edit/{{$user->id}}" class="btn btn-warning">Edit</a>
                                 </td>
+                                @endcan
+                                @can('delete_user')
                                 <td>
                                     <form action="/admin/users/delete/{{$user->id}}" method="POST">
                                     @csrf
@@ -45,6 +47,7 @@
                                     <input type="submit" value="DELETE" class="btn btn-danger">
                                     </form>
                                 </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>

@@ -21,9 +21,12 @@
                                 <td>{{$role->id}}</td>
                                 <td>{{$role->name}}</td>
                                 <td>{{$role->display_name}}</td>
+                                @can('edit_role')
                                 <td>
                                     <a href="/admin/roles/edit/{{$role->id}}" class="btn btn-warning">Edit</a>
                                 </td>
+                                @endcan
+                                @can('delete_role')
                                 <td>
                                     <form action="/admin/roles/delete/{{$role->id}}" method="POST">
                                     @csrf
@@ -31,6 +34,7 @@
                                     <input type="submit" value="Xóa" class="btn btn-danger">
                                     </form>
                                 </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>

@@ -34,29 +34,29 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware(['auth'])->group(function(){
     Route::prefix('admin')->group(function(){
-        Route::get('/users', [UserController::class,'index'])->middleware('check:list_user');
-        Route::get('/users/create', [UserController::class,'create'])->middleware('check:add_user');
-        Route::post('/users/store', [UserController::class,'store'])->middleware('check:add_user');
-        Route::get('/users/edit/{id}', [UserController::class,'edit'])->middleware('check:edit_user');
-        Route::post('/users/update/{id}', [UserController::class,'update'])->middleware('check:edit_user');
-        Route::delete('/users/delete/{id}', [UserController::class,'destroy'])->middleware('check:delete_user');
+        Route::get('/users', [UserController::class,'index'])->middleware('can:list_user');
+        Route::get('/users/create', [UserController::class,'create'])->middleware('can:add_user');
+        Route::post('/users/store', [UserController::class,'store'])->middleware('can:add_user');
+        Route::get('/users/edit/{id}', [UserController::class,'edit'])->middleware('can:edit_user');
+        Route::post('/users/update/{id}', [UserController::class,'update'])->middleware('can:edit_user');
+        Route::delete('/users/delete/{id}', [UserController::class,'destroy'])->middleware('can:edit_user');
 
         Route::prefix('roles')->group(function(){
-            Route::get('/', [RoleController::class,'index'])->name('role.index')->middleware('check:list_role'); 
-            Route::get('/create', [RoleController::class,'create'])->name('role.create')->middleware('check:add_role'); 
-            Route::post('/store', [RoleController::class,'store'])->name('role.store')->middleware('check:add_role'); 
-            Route::get('/edit/{id}', [RoleController::class,'edit'])->name('role.edit')->middleware('check:edit_role');
-            Route::post('/update/{id}', [RoleController::class,'update'])->name('role.update')->middleware('check:edit_role');
-            Route::delete('/delete/{id}', [RoleController::class,'destroy'])->name('role.delete')->middleware('check:delete_role'); 
+            Route::get('/', [RoleController::class,'index'])->name('role.index')->middleware('can:list_role'); 
+            Route::get('/create', [RoleController::class,'create'])->name('role.create')->middleware('can:add_role'); 
+            Route::post('/store', [RoleController::class,'store'])->name('role.store')->middleware('can:add_role'); 
+            Route::get('/edit/{id}', [RoleController::class,'edit'])->name('role.edit')->middleware('can:add_role');
+            Route::post('/update/{id}', [RoleController::class,'update'])->name('role.update')->middleware('can:add_role');
+            Route::delete('/delete/{id}', [RoleController::class,'destroy'])->name('role.delete')->middleware('can:delete_role'); 
         });
 
         Route::prefix('posts')->group(function(){
-            Route::get('/', [PostController::class,'index']);
-            Route::get('/create', [PostController::class,'create']); 
-            Route::post('/store', [PostController::class,'store']); 
-            Route::get('/edit/{id}', [PostController::class,'edit']);
-            Route::post('/update/{id}', [PostController::class,'update']); 
-            Route::delete('/delete/{id}', [PostController::class,'destroy'])->name('post.destroy'); 
+            Route::get('/', [PostController::class,'index'])->middleware('can:list_post');
+            Route::get('/create', [PostController::class,'create'])->middleware('can:add_post'); 
+            Route::post('/store', [PostController::class,'store'])->middleware('can:add_post'); 
+            Route::get('/edit/{id}', [PostController::class,'edit'])->middleware('can:edit_post');
+            Route::post('/update/{id}', [PostController::class,'update'])->middleware('can:edit_post'); 
+            Route::delete('/delete/{id}', [PostController::class,'destroy'])->name('post.destroy')->middleware('can:edit_post'); 
         });
         Route::resource('/categories',CategoryController::class);
 

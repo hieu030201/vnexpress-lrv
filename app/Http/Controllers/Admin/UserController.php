@@ -84,6 +84,7 @@ class UserController extends Controller
             return redirect('/admin/users'); 
             }catch (Exception $exception){
                 DB::rollBack();
+                return view('error.users.403');
             }
     }
 
@@ -151,6 +152,7 @@ class UserController extends Controller
             return redirect('admin/users');
         }catch (Exception $exception){
             DB::rollBack();
+            return view('error.users.403');
         }
     }
 

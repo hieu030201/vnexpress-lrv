@@ -14,7 +14,7 @@
                             <!-- Post Content -->
                             <div class="post-content">
                                 <h2>{{$data->name}}</h2>
-                                <h6>{{$data->description}}</h6>
+                                <h6>{!!$data->description!!}</h6>
                                 <div class="post-meta second-part">
                                     <p><a href="#" class="post-author">{{$data->user_name}}</a> on <a href="#" class="post-date">{{$data->created_at}}</a></p>
                                 </div>
@@ -219,7 +219,7 @@
                         @if(Auth::check())
                         <h5>Get in Touch</h5>
                         <!-- Contact Form -->
-                        <form action="/comment/store" method="post">
+                        <form action="" method="post">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="group">
@@ -245,20 +245,7 @@
                     <div class="comment_area clearfix mt-70">
                     <li id="comment" class="single_comment_area">
                         <!-- Comment Content -->
-                        @foreach($data->comments as $comment)
-                            <div class="comment-content">
-                                <!-- Comment Meta -->
-                                <div class="comment-meta d-flex align-items-center justify-content-between">
-                                    <p><a href="#" class="post-author">{{$comment->user_name}}</a> on <a href="#" class="post-date">{{$comment->created_at}}</a></p>
-                                    @if(Auth::check())
-                                    <a href="#" class="comment-reply btn world-btn">Trả lời</a>
-                                    @else
-                                        <a href="/login"><button type="button" class="btn btn-danger" data-toggle="modal">Vui lòng đăng nhập để comment</button><a>
-                                    @endif
-                                </div>
-                                <p>{{$comment->content}}</p>
-                            </div>
-                        @endforeach
+                       @include('front.component.comment',['comments'=>$data->comments])
                     </li>
                     </div>
                 </div>
@@ -269,10 +256,11 @@
 </div>
 <script>
 var _csrf = '{{csrf_token()}}';
+let _commentUrl = '{{route("comment", $data->id)}}';
     $('#btn-comment').click(function(ev){
         ev.preventDefault();
         let content = $('#message').val();
-        let _commentUrl = '{{route("comment", $data->id)}}';
+       
         $.ajax({
         url: _commentUrl,
         type:'POST',
@@ -294,5 +282,40 @@ var _csrf = '{{csrf_token()}}';
     function reloadPage(){
         location.reload(true);
     }
+$(document).on('click','.comment-reply',function(ev){
+    ev.preventDefault()
+    var id = $(this).data('id');
+    var comment_reply_id = '#content-reply-'+id;
+    var form_reply = '.form-reply-'+id;
+    var contentReply = $(comment_reply_id).val();
+    $('.formReply').slideUp();
+    $(form_reply).slideDown();
+});
+$(document).on('click','.btn-send-comment-reply',function(ev){
+    ev.preventDefault()
+    var id = $(this).data('id');
+    var comment_reply_id = '#content-reply-'+id;
+    var contentReply = $(comment_reply_id).val();
+    var form_reply = '.form-reply-'+id;
+
+    $.ajax({
+        url: _commentUrl,
+        type:'POST',
+        data: {
+            content: contentReply,
+            parent_id:id,
+            _token: _csrf
+        },
+        success: function(res){
+            if(res.error){
+                $('#comment-error').html(res.error);
+            }else{
+                $('#comment-error').html('');
+                $('#message').val('');
+                $('#comment').html(res);
+            }
+        }
+        }); 
+});
 </script>
 @endsection
