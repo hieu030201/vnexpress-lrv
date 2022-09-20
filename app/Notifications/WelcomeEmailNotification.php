@@ -46,7 +46,7 @@ class WelcomeEmailNotification extends Notification
                     ->line('Tên đăng nhập của bạn là: '.$this->users->email)
                     ->line('Mậu khẩu của bạn là:'.'12345678')
                     ->line('Khi nhận được mail yêu cầu đổi mật khẩu')
-                    ->action('Click đổi mật khẩu', url('/login'))
+                    ->action('Click đổi mật khẩu', url('/password/reset'))
                     ->line('Thank you for using our application!');
     }
 

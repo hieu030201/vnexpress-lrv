@@ -25,7 +25,7 @@
                     <form>
                     <div class="form-group">
                         <label for="exampleFormControlFile1">Avatar</label>
-                        <input type="file" name="avatar" class="form-control-file" id="exampleFormControlFile1">
+                        <input type="file" name="avatar" value="{{$user->avatar}}" class="form-control-file" id="exampleFormControlFile1">
                     </div>
                     <div class="col-auto my-1">
                     <label class="mr-sm-2" for="inlineFormCustomSelect">Role</label>

@@ -39,9 +39,13 @@
                             <!-- Search Form  -->
                             <div id="search-wrapper">
                                 <form action="#">
-                                    <input type="text" id="search" placeholder="Search something...">
+                                    <input type="text" name="search-input" class="input-search-ajax" id="search" placeholder="Search something..." style="color: black;">
                                     <div id="close-icon"></div>
-                                    <input class="d-none" type="submit" value="">
+                                    <input class="d-none" type="submit" value="" >
+                                    <div class="search-ajax-result" style="position:absolute; padding-top:20px;background-color:aliceblue;">
+                                     
+                                    </div>
+                                
                                 </form>
                             </div>
                         </div>
@@ -49,4 +53,30 @@
                 </div>
             </div>
         </div>
-    </header>
+</header>
+<script>
+    $(document).ready(function(){
+        var _csrf = '{{csrf_token()}}';
+        $('.input-search-ajax').keyup(function(){
+            let query = $(this).val();
+            if(query != '')
+            {
+                $.ajax({
+                    url: "{{route('search-post')}}",
+                    type:"POST",
+                    data: {
+                        query: query,
+                        _token: _csrf,
+                    },
+                    success: function(data){
+                        $('.search-ajax-result').fadeIn();
+                        $('.search-ajax-result').html(data);
+                    }
+                });
+            }else{
+                $('.search-ajax-result').html('');
+                $('.search-ajax-result').hide();
+            }
+        });  
+    });
+</script>

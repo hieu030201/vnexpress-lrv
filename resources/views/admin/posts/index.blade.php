@@ -4,8 +4,15 @@
 <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
-            <i class="fas fa-users"></i> Roles
+            <i class="fas fa-users"></i> Post
                 <a href="/admin/posts/create" style="float: right;" class="btn btn-success btn-sm float-right"><i class="fas fa-users"></i> Create Post</a>
+                <hr>
+                <form action="">
+                    <div class="form-group col-md-4">
+                        <input type="search" name="search" id="" class="form-control" placeholder="Search by title or author">
+                    </div>
+                    <button class="btn btn-primary">Search</button>
+                </form>
                 <hr>
                 @if(Session()->has('status'))
                     <div class="alert alert-success" role="alert">
@@ -36,7 +43,7 @@
                                 <img style="height:100px;" src="{{asset('post_images')}}/{{$post->image}}" alt="{{$post->name}}"  width="120px" heigh="120px;" class="img-thumbnail">
                                 </td>
                                 <td>{{$post->user_name}}</td>
-                                <td>{{optional($post->categories)->name}}</td>
+                                <td>{{$post->categories->name}}</td>
                                 <td>{{$post->user_name}}</td>
                                 @can('edit_post')
                                 <td>
@@ -56,6 +63,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                {{$posts->links('pagination::bootstrap-4')}}
             </div>
         </div>
     </div>

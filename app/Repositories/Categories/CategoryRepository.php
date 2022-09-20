@@ -16,7 +16,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
     public function getCategoryInfo(int $categoryId)
     {
-        return Category::findOrfail($categoryId);
+        return Category::find($categoryId);
     }
 
     public function createCategory(array $categoryData)
@@ -29,14 +29,14 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
     public function deleteCategory($ids)
     {
-        $category = $this->find($ids);
+        $category = Category::find($ids);
         $category->delete();
         return $category;
     }
 
     public function updateCategory($categoryData, $id)
     {
-        $category = $this->find($id);
+        $category = Category::find($id);
         $category->name = $categoryData['name'];
         $category->update();
         return $category;

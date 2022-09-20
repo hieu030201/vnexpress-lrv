@@ -1,5 +1,6 @@
 @foreach($comments as $comment)
 @if($comment->parent_id == 0)
+
     <div class="comment-content">
         <!-- Comment Meta -->
         <div class="comment-meta d-flex align-items-center justify-content-between">
@@ -18,6 +19,9 @@
             </div>
             <button type="submit" onclick="reloadPage();" data-id="{{$comment->id}}" class="btn btn-primary btn-send-comment-reply">Trả lời</button>
         </form>
+        @if(Auth::check() && Auth::id() == $comment->user_id)
+            <button type="button" value="{{$comment->id}}" class="delete-form btn world-btn">Delete</button>
+        @endif
     </div>
 @endif
     @foreach($comment->comment_child as $child)
@@ -30,8 +34,13 @@
                 <p><a href="#" class="post-author">{{$child->user_name}}</a> on <a href="#" class="post-date">{{$child->created_at}}</a></p>
             </div>
             <p>{{$child->content}}</p>
+            @if(Auth::check() && Auth::id() == $child->user_id)
+                <button type="button" value="{{$child->id}}" class="delete-form btn world-btn">Delete</button>
+            @endif
         </div>
+        
     </li>
     </ol>
     @endforeach
+
 @endforeach

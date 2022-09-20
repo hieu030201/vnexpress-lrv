@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Front\CustomerController;
 use App\Http\Controllers\Front\FrontCommentController;
+use App\Http\Controllers\Front\FrontSearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,8 @@ Route::get('/', [CustomerController::class,'index']);
 Route::get('/getPostByCategory/{category_id}', [CustomerController::class,'getPostByCategory']);
 Route::get('/detail/{id}', [CustomerController::class,'detail']);
 Route::post('/comment/{post_id}',[FrontCommentController::class,'comment'])->name('comment');
+Route::post('/delete-comment',[FrontCommentController::class,'destroy']);
+Route::post('/search-post',[FrontSearchController::class,'search_post'])->name('search-post');
 
 Auth::routes();
 
@@ -40,6 +43,8 @@ Route::middleware(['auth'])->group(function(){
         Route::get('/users/edit/{id}', [UserController::class,'edit'])->middleware('can:edit_user');
         Route::post('/users/update/{id}', [UserController::class,'update'])->middleware('can:edit_user');
         Route::delete('/users/delete/{id}', [UserController::class,'destroy'])->middleware('can:edit_user');
+        Route::get('/users/change-password', [UserController::class,'change_password']);
+        Route::post('/users/update-password', [UserController::class,'update_password']);
 
         Route::prefix('roles')->group(function(){
             Route::get('/', [RoleController::class,'index'])->name('role.index')->middleware('can:list_role'); 

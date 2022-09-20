@@ -42,48 +42,5 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('add_post', 'App\Policies\PostPolicy@create');
         Gate::define('edit_post', 'App\Policies\PostPolicy@update');
         Gate::define('delete_post', 'App\Policies\PostPolicy@delete');
-
-        // Gate::define('list_user',function($user){
-        //     return $user->checkPermissionAccess('list_user');
-        // });
-        // Gate::define('add_user',function($user){
-        //     return $user->checkPermissionAccess('add_user');
-        // });
-        // Gate::define('add_user',function($user){
-        //     return $user->checkPermissionAccess('add_user');
-        // });
-        // Gate::define('edit_user',function($user){
-        //     return $user->checkPermissionAccess('edit_user');
-        // });
-        // Gate::define('delete_user',function($user){
-        //     return $user->checkPermissionAccess('delete_user');
-        // });
-        // Gate::define('list_role',function($user){
-        //     return $user->checkPermissionAccess('list_role');
-        // });
-        // Gate::define('add_role',function($user){
-        //     return $user->checkPermissionAccess('add_role');
-        // });
-        // Gate::define('edit_role',function($user){
-        //     return $user->checkPermissionAccess('edit_role');
-        // });
-        // Gate::define('delete_role',function($user){
-        //     return $user->checkPermissionAccess('delete_role');
-        // });
-        // Gate::define('list_post',function($user){
-        //     return $user->checkPermissionAccess('list_post');
-        // });
-        // Gate::define('add_post',function($user){
-        //     return $user->checkPermissionAccess('add_post');
-        // });
-        // Gate::define('edit_post',function($user){
-        //     return $user->checkPermissionAccess('edit_post');
-        // });
-        // Gate::define('delete_post',function($user){
-        //     return $user->checkPermissionAccess('delete_post');
-        // });
-        // Gate::define('list_post',function($user){
-        //     return $user->checkPermissionAccess('list_post');
-        // });
     }
 }

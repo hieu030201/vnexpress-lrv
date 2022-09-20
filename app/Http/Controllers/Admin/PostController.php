@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use App\Models\Category;
-use App\Models\Comment;
 use App\Models\Post;
-use App\Models\User;
-use App\Services\Posts\PostServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class PostController extends Controller
 {
@@ -18,16 +17,23 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    private $postService;
-    public function __construct(PostServiceInterface $postService)
+    private $post;
+    private $category;
+    public function __construct(Post $post,Category $category)
     {
-        $this->postService = $postService;
+        $this->post = $post;
+        $this->category = $category;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = $this->postService->index();
-        return view('admin.posts.index',compact('posts'));
+        $search = $request['search'] ?? "";
+        if($search !=""){
+            $posts = $this->post->where('name', 'LIKE', "%$search%")->orWhere('user_name', 'LIKE', "%$search%")->paginate(10);
+        }else{
+            $posts = $this->post->with('categories')->orderby('id','DESC')->paginate(8);
+        }
+        return view('admin.posts.index',compact('posts','search'));
     }
 
     /**
@@ -37,7 +43,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = $this->category->all();
         return view('admin.posts.new',compact('categories'));
     }
 
@@ -47,12 +53,8 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $request->validate([
-            'name'=>'required|max:500',
-            'description'=>'required',
-        ]);
         $imageName="noimage.png";
         //if a user upload image
         if($request->image){
@@ -63,7 +65,7 @@ class PostController extends Controller
             $request->image->move(public_path('post_images'),$imageName);
         }
             $users = Auth::user();
-            $posts = new Post();
+            $posts = $this->post;
             $posts->user_id = $users->id;
             $posts->user_name = $users->name;
             $posts->name = $request->name;
@@ -95,8 +97,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        $posts = Post::find($id);
-        $categories= Category::all();
+        $posts = $this->post->find($id);
+        $categories= $this->category->all();
         return view('admin.posts.edit',compact('posts','categories'));
     }
 
@@ -107,14 +109,8 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PostRequest $request, $id)
     {
-            $request->validate([
-            'name'=>'required|max:500',
-            'description'=>'required',
-            'category_id'=>'required|numeric',
-            'short_des' =>'required|max:500'
-        ]);
         $imageName="noimage.png";
         //if a user upload image
         if($request->image){
@@ -125,7 +121,7 @@ class PostController extends Controller
             $request->image->move(public_path('post_images'),$imageName);
         }
             $users = Auth::user();
-            $posts = Post::find($id);
+            $posts = $this->post->find($id);
             $posts->user_id = $users->id;
             $posts->user_name = $users->name;
             $posts->name = $request->name;
@@ -146,8 +142,13 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $posts = Post::find($id);
+        $posts = $this->post->find($id);
         $postName = $posts->name;
+        $path = public_path('/post_images/'.$posts->avatar);
+
+        if(File::exists($path)){
+            File::delete($path);
+        }
         $posts->delete();
         Session()->flash('status',$postName. 'is deleted successfully');
         return redirect('/admin/posts');

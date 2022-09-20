@@ -243,10 +243,9 @@
                 <div class="col-12 col-lg-8">
                     <!-- Comment Area Start -->
                     <div class="comment_area clearfix mt-70">
-                    <li id="comment" class="single_comment_area">
-                        <!-- Comment Content -->
+                   
                        @include('front.component.comment',['comments'=>$data->comments])
-                    </li>
+                    
                     </div>
                 </div>
             
@@ -316,6 +315,29 @@ $(document).on('click','.btn-send-comment-reply',function(ev){
             }
         }
         }); 
+});
+
+$(document).on('click', '.delete-form', function(){
+    if(confirm('Xóa comment ?'))
+    {
+        var thisClicked = $(this);
+        var comment_id = thisClicked.val();
+        $.ajax({
+            type: "POST",
+            url: "/delete-comment",
+            data:{
+                'comment_id':comment_id,
+                _token: _csrf
+            },
+            success: function(res){
+                if(res.status == 200){
+                    thisClicked.closest('.comment-content').remove();
+                }else{
+                    alert(res.message);
+                }
+            }
+        });
+    }
 });
 </script>
 @endsection

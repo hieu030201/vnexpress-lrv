@@ -5,19 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\RolePermission;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
     private $role;
     private $permission;
-    public function __construct(Role $role, Permission $permission)
+    private $rolePermiss;
+    public function __construct(Role $role, Permission $permission, RolePermission $rolePermiss)
     {
         $this->role = $role;
         $this->permission = $permission;
+        $this->rolePermiss = $rolePermiss;
     }
 
     public function index()
@@ -45,7 +47,7 @@ class RoleController extends Controller
     {
         $permissions = $this->permission->all();
         $role = $this->role->findOrfail($id);
-        $getAllPermission = DB::table('role_permission')->where('role_id',$id)->pluck('permission_id');
+        $getAllPermission = $this->rolePermiss->where('role_id',$id)->pluck('permission_id');
         return view('admin.roles.edit',compact('permissions','role','getAllPermission'));
     }
     
@@ -61,11 +63,11 @@ class RoleController extends Controller
         return redirect('/admin/roles');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         try{
             DB::beginTransaction();
-            $role = Role::find($id);
+            $role = $this->role->find($id);
             $role->delete();
             $role->permissions()->detach();
             DB::commit();

@@ -13,9 +13,14 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $comment;
+    public function __construct(Comment $comment)
+    {
+        $this->comment = $comment;
+    }
     public function index()
     {
-        $comments = Comment::orderBy('id','desc')->paginate(10);
+        $comments = $this->comment->orderBy('id','desc')->paginate(10);
         return view('admin.comments.index',compact('comments'));
     }
 
@@ -55,19 +60,19 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        $comment = Comment::find($id)->delete();
+        $comment = $this->comment->find($id)->delete();
         Session()->flash('status', 'is deleted successfully');
         return redirect('/admin/comments');
     }
 
     public function soft_trash(Request $request)
     {
-        $comments = Comment::onlyTrashed()->orderBy('deleted_at','desc')->paginate(10);
+        $comments = $this->comment->onlyTrashed()->orderBy('deleted_at','desc')->paginate(10);
         return view('admin.comments.soft-trash',compact('comments'));
     }
 
     public function untrash($id){
-        $comments = Comment::withTrashed()->find($id);
+        $comments = $this->comment->withTrashed()->find($id);
         $comments->restore();
         Session()->flash('status', 'restore success.');
         return redirect()->back();

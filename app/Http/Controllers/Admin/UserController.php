@@ -3,22 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangePassRequest;
+use App\Http\Requests\UserRequest;
 use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\User;
 use App\Notifications\WelcomeEmailNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
     private $user;
     private $role;
-    public function __construct(User $user,Role $role)
+    private $roleUser;
+    public function __construct(User $user,Role $role,RoleUser $roleUser)
     {
         $this->user = $user;
         $this->role = $role;
+        $this->roleUser = $roleUser;
     }
     /**
      * Display a listing of the resource.
@@ -48,13 +54,10 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {    
         try {
             DB::beginTransaction();
-            $request->validate([
-                'email'=>'required|max:255',
-            ]);
             $imageName="noimage.png";
             //if a user upload image
             if($request->avatar){
@@ -64,13 +67,7 @@ class UserController extends Controller
                 $imageName = date('mdYHis').uniqid().'.'.$request->avatar->extension();
                 $request->avatar->move(public_path('avatar_images'),$imageName);
             }
-                // $users = $this->user->create([
-                //     'name' => $request->name,
-                //     'email' => $request->email,
-                //     'password' => Hash::make($request->password),
-                //     'avatar' => $imageName,
-                // ]);
-                $users = new User();
+                $users = $this->user;
                 $users->name = $request->name;
                 $users->email = $request->email;
                 $users->password = Hash::make($request->password);
@@ -120,24 +117,19 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {   
         try {
             DB::beginTransaction();
-            $request->validate([
-                'name'=>'required|max:255',
-                'email'=>'required|max:255',
-            ]);
             $imageName="noimage.png";
-            //if a user upload image
             if($request->avatar){
                 $request->validate([
                     'avatar' => 'nullable|file|image|mimes:jpeg,png,jpg|max:5000'
                 ]);
-                $imageName = date('mdYHis').uniqid().'.'.$request->image->extension();
-                $request->image->move(public_path('avatar_images'),$imageName);
+                $imageName = date('mdYHis').uniqid().'.'.$request->avatar->extension();
+                $request->avatar->move(public_path('avatar_images'),$imageName);
             }
-                $users = User::find($id);
+                $users = $this->user->find($id);
                 $users->name = $request->name;
                 $users->email = $request->email;
                 $users->password = Hash::make($request->password);
@@ -147,7 +139,7 @@ class UserController extends Controller
                 DB::table('role_user')->where('user_id',$id)->delete();
                 $users = $this->user->find($id);
                 $users->roles()->attach($request->roles);
-            $request->session()->flash('status',$request->name. 'is saved successfully');
+                session()->flash('status',$request->name. 'is saved successfully');
             DB::commit();
             return redirect('admin/users');
         }catch (Exception $exception){
@@ -164,11 +156,36 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
+        $user = $this->user->find($id);
         $username = $user->name;
+        $path = public_path('/avatar_images/'.$user->avatar);
+
+        if(File::exists($path)){
+            File::delete($path);
+        }
         $user->delete();
         $user->roles()->detach();
         Session()->flash('status ', ''.$username.' '. 'The User is deleted successfully');
         return redirect('/admin/users');
+    }
+
+    public function change_password(){
+        return view('admin.users.change-pass');
+    }
+
+    public function update_password(ChangePassRequest $request)
+    {
+        $user = auth()->user();
+        if(Hash::check($request->old_password,$user->password)){
+            $this->user->find($user->id)->update([
+                'password'=>Hash::make($request->new_password),
+            ]);
+            session()->flash('status',$request->email. 'your password changed successfully');
+            return redirect()->back();
+
+        }else{
+            session()->flash('status',$request->email. 'your password has not been changed, Old password or confirm pass not true');
+            return redirect()->back();
+        }
     }
 }

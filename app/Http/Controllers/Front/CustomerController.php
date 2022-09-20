@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+    private $post;
+    public function __construct(Post $post)
+    {
+        $this->post = $post;
+    }
+
     public function index()
     {
         $categories = Category::all();
@@ -16,7 +22,7 @@ class CustomerController extends Controller
     }
     public function getPostByCategory($category_id)
     {
-        $postByCategory = Post::where('category_id',$category_id)->orderBy('id', 'DESC')->limit(6)->get();
+        $postByCategory = $this->post->where('category_id',$category_id)->orderBy('id', 'DESC')->limit(6)->get();
         $html ='';
             foreach($postByCategory as $post)
             {
@@ -47,7 +53,7 @@ class CustomerController extends Controller
 
     function detail($id)
     {
-        $data = Post::find($id);
+        $data = $this->post->find($id);
         return view('front.detail',compact('data'));
     }
 }
